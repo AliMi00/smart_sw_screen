@@ -21,7 +21,6 @@ static lv_timer_t *fade_timer;
 static lv_obj_t *label_time_global = NULL;  // Globale referentie klok
 
 void fade_out_label(lv_timer_t *timer);
-// Functie om WiFi te verbinden
 void connectWiFi() {
   Serial.print("Verbinden met WiFi");
   WiFi.begin(ssid, password);
@@ -29,12 +28,10 @@ void connectWiFi() {
     delay(500);
     Serial.print(".");
   }
-  Serial.println(" Verbonden!");
+  Serial.println(" Verbonden");
 }
 
-// Initialiseer NTP tijd
 void initTime() {
-  // Stel tijdzone in (hier UTC+1, Nederland) en zomertijd (3600 seconden)
   configTime(3600, 3600, "pool.ntp.org", "time.nist.gov");
 
   Serial.print("Wachten op tijd synchronisatie");
@@ -47,7 +44,6 @@ void initTime() {
   Serial.println(" Tijd gesynchroniseerd!");
 }
 
-// Update de tijd op het scherm
 void update_time_display() {
   if (!label_time_global) return;
 
@@ -83,7 +79,6 @@ float fetch_temperature_from_city(const String &city) {
     return -1000.0;
   }
 
-  // Pak temperatuur uit current_condition[0].temp_C
   const char *tempC = doc["current_condition"][0]["temp_C"];
   if (tempC == nullptr) {
     Serial.println("Geen temperatuurdata");
@@ -116,23 +111,17 @@ void update_temperature_display() {
   } else {
     lv_label_set_text(label_temp, "Temp: fout");
   }
-
-  //lv_label_set_text_fmt(label_temp, "%s: %.1f °C %s", gekozen_stad.c_str(), temp, symbool);
 }
 
-// --- UI functie ---
 void create_smart_home_ui() {
-  // Achtergrond
   lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x121212), 0);
 
-  // Titel
   lv_obj_t *title = lv_label_create(lv_scr_act());
   lv_label_set_text(title, LV_SYMBOL_HOME " Smart Home");
   lv_obj_set_style_text_font(title, &lv_font_montserrat_24, 0);
   lv_obj_set_style_text_color(title, lv_palette_lighten(LV_PALETTE_BLUE_GREY, 3), 0);
   lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
 
-  // Lichtknop
   lv_obj_t *light_btn = lv_btn_create(lv_scr_act());
   lv_obj_set_size(light_btn, 180, 50);
   lv_obj_align(light_btn, LV_ALIGN_CENTER, 0, -40);
@@ -141,14 +130,12 @@ void create_smart_home_ui() {
   lv_obj_set_style_shadow_width(light_btn, 15, 0);
   lv_obj_set_style_shadow_opa(light_btn, LV_OPA_30, 0);
 
-  // Startkleur blauw (zonder aan/uit tekst)
   lv_obj_set_style_bg_color(light_btn, lv_palette_main(LV_PALETTE_BLUE), 0);
 
   lv_obj_t *light_label = lv_label_create(light_btn);
   lv_label_set_text(light_label, "Licht: START");
   lv_obj_center(light_label);
 
-  // Track of de knop al is gebruikt
   static bool first_toggle = false;
 
   lv_obj_add_event_cb(
@@ -156,17 +143,7 @@ void create_smart_home_ui() {
       lv_obj_t *btn = lv_event_get_target(e);
       lv_obj_t *label = lv_obj_get_child(btn, 0);
 
-      /*if (!first_toggle) {
-            // Eerste klik: zet uit (rood), en reset checked state
-            lv_obj_clear_state(btn, LV_STATE_CHECKED);
-            lv_label_set_text(label, LV_SYMBOL_POWER " Licht: AAN");
-            lv_obj_set_style_bg_color(btn, lv_palette_main(LV_PALETTE_GREEN), 0);
-            first_toggle = true;
-            return;
-        }*/
-
-      // Toggle tussen aan/uit en pas stijl aan
-      if (lv_obj_has_state(btn, LV_STATE_CHECKED)) {
+           if (lv_obj_has_state(btn, LV_STATE_CHECKED)) {
         // Aan
         lv_label_set_text(label, LV_SYMBOL_POWER " Licht: UIT");
         lv_obj_set_style_bg_color(btn, lv_palette_main(LV_PALETTE_RED), 0);
@@ -178,14 +155,12 @@ void create_smart_home_ui() {
     },
     LV_EVENT_CLICKED, NULL);  // LET OP: Event is LV_EVENT_CLICKED
 
-  // Slider
   lv_obj_t *slider = lv_slider_create(lv_scr_act());
   lv_obj_set_width(slider, 220);
   lv_obj_align(slider, LV_ALIGN_CENTER, 0, 40);
   lv_slider_set_range(slider, 0, 100);
   lv_slider_set_value(slider, 50, LV_ANIM_OFF);
 
-  // Slider stijl
   static lv_style_t style_slider, style_knob;
   lv_style_init(&style_slider);
   lv_style_set_bg_color(&style_slider, lv_color_hex(0x1E1E1E));
@@ -198,7 +173,6 @@ void create_smart_home_ui() {
   lv_style_set_size(&style_knob, 20);
   lv_obj_add_style(slider, &style_knob, LV_PART_KNOB);
 
-  // Label boven slider
   label_slider = lv_label_create(lv_scr_act());
   lv_label_set_text(label_slider, "Helderheid: 50%");
   lv_obj_set_style_text_color(label_slider, lv_palette_lighten(LV_PALETTE_CYAN, 3), 0);
@@ -210,7 +184,6 @@ void create_smart_home_ui() {
   lv_obj_set_style_opa(label_slider, LV_OPA_TRANSP, 0);
   lv_obj_align_to(label_slider, slider, LV_ALIGN_OUT_TOP_MID, 0, -10);
 
-  // Event callback slider
   lv_obj_add_event_cb(
     slider, [](lv_event_t *e) {
       lv_obj_t *slider = lv_event_get_target(e);
@@ -231,7 +204,6 @@ void create_smart_home_ui() {
     },
     LV_EVENT_VALUE_CHANGED, NULL);
 
-  // Fade out timer
   fade_timer = lv_timer_create(fade_out_label, 2000, label_slider);
 }
 
@@ -247,7 +219,6 @@ void fade_out_label(lv_timer_t *timer) {
   lv_anim_start(&a);
 }
 
-// --- Setup ---
 void setup() {
   Serial.begin(115200);
   connectWiFi();  // WiFi verbinden
@@ -278,8 +249,6 @@ void setup() {
   create_smart_home_ui();
   update_time_display();  // Initiale tijd tonen
 }
-
-// --- Loop ---
 void loop() {
   lv_task_handler();
   static unsigned long last_update = 0;

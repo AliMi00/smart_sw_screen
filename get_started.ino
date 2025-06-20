@@ -10,8 +10,6 @@ LilyGo_Class amoled;
 
 static lv_obj_t *label_temp;
 
-//color wheel tabs different light, select different lights en colorpicking, graph temp/presence sensor
-
 const char *ssid = "";
 const char *password = "";
 String gekozen_stad = "Enschede";

@@ -5,6 +5,7 @@ This is an Embedded System project for a Smart Light Switch.
 ## Project Structure
 
 - **3D Designs**: All 3D design files are located in the `3D_designs/` folder
+- **Docker**: The Docker and Home assistant config for Raspberry pi is located in the `docker_home_assistant` folder
 - **Screen Software**: The main screen software can be found in the `examples/first_example/` folder
 
 ## Team Members

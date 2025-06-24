@@ -10,8 +10,8 @@ LilyGo_Class amoled;
 
 static lv_obj_t *label_temp;
 
-const char *ssid = "";
-const char *password = "";
+const char *ssid = "Ali";
+const char *password = "12345678";
 String gekozen_stad = "Enschede";
 
 static lv_obj_t *label_slider;
@@ -34,11 +34,11 @@ void initTime() {
 
   Serial.print("Wachten op tijd synchronisatie");
   time_t now = time(nullptr);
-  while (now < 8 * 3600 * 2) {  // wacht tot tijd gesynchroniseerd is
-    delay(500);
-    Serial.print(".");
-    now = time(nullptr);
-  }
+  // while (now < 8 * 3600 * 2) {  // wacht tot tijd gesynchroniseerd is
+  //   delay(500);
+  //   Serial.print(".");
+  //   now = time(nullptr);
+  // }
   Serial.println(" Tijd gesynchroniseerd!");
 }
 

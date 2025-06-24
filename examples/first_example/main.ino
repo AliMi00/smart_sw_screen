@@ -227,6 +227,13 @@ void setupGUI() {
     info_screen = lv_obj_create(NULL);
     settings_screen = lv_obj_create(NULL);
 
+    // Set background colors for all screens
+    // You can use predefined colors or custom RGB values
+    lv_obj_set_style_bg_color(main_screen, lv_color_hex(0x000000), 0);  // Dark blue
+    lv_obj_set_style_bg_color(brightness_screen, lv_color_hex(0x000000), 0);  // Dark purple
+    lv_obj_set_style_bg_color(info_screen, lv_color_hex(0x000000), 0);  // Dark green
+    lv_obj_set_style_bg_color(settings_screen, lv_color_hex(0x000000), 0);  // Dark orange
+
     // Initialize all screens
     mainScreenGUI();
     brightnessScreenGUI();
@@ -242,7 +249,9 @@ void mainScreenGUI() {
     lv_obj_t *title = lv_label_create(main_screen);
     lv_label_set_text(title, "Smart Light Control");
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
-    lv_obj_set_style_text_font(title, &lv_font_montserrat_18, 0);
+    lv_obj_set_style_text_font(title, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_color(title, lv_color_white(), 0);
+
 
     // Create a light switch
     light_switch = lv_switch_create(main_screen);
@@ -251,14 +260,16 @@ void mainScreenGUI() {
         lightState = lv_obj_has_state(light_switch, LV_STATE_CHECKED);
         toggleLight();
     }, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_set_size(light_switch, 150, 50);  // width: 200px, height: 100px
+
     
     // Label for the switch
     lv_obj_t *switch_label = lv_label_create(main_screen);
     lv_label_set_text(switch_label, "Light");
-    lv_obj_align_to(switch_label, light_switch, LV_ALIGN_OUT_TOP_MID, 0, -10);
-
-    // Create brightness shortcut button
+    lv_obj_set_style_text_color(switch_label, lv_color_white(), 0);
+    lv_obj_align_to(switch_label, light_switch, LV_ALIGN_OUT_TOP_MID, 0, -10);    // Create brightness shortcut button
     lv_obj_t *brightness_btn = lv_btn_create(main_screen);
+    lv_obj_set_size(brightness_btn, 150, 50);  // width: 150px, height: 50px
     lv_obj_align(brightness_btn, LV_ALIGN_CENTER, 0, 20);
     lv_obj_add_event_cb(brightness_btn, [](lv_event_t *e) {
         switchToScreen(STATE_BRIGHTNESS);
@@ -270,7 +281,8 @@ void mainScreenGUI() {
 
     // Create info shortcut button
     lv_obj_t *info_btn = lv_btn_create(main_screen);
-    lv_obj_align(info_btn, LV_ALIGN_CENTER, 0, 70);
+    lv_obj_set_size(info_btn, 150, 50);  // width: 150px, height: 50px
+    lv_obj_align(info_btn, LV_ALIGN_CENTER, 0, 80);  // Adjusted Y position for larger button
     lv_obj_add_event_cb(info_btn, [](lv_event_t *e) {
         switchToScreen(STATE_INFO);
     }, LV_EVENT_CLICKED, NULL);
@@ -324,10 +336,9 @@ void brightnessScreenGUI() {
     lv_obj_add_event_cb(brightness_slider, [](lv_event_t *e) {
         lv_obj_t *label = (lv_obj_t*)lv_event_get_user_data(e);
         lv_label_set_text_fmt(label, "%d%%", lv_slider_get_value(brightness_slider));
-    }, LV_EVENT_VALUE_CHANGED, brightness_value_label);
-
-    // Create back button
+    }, LV_EVENT_VALUE_CHANGED, brightness_value_label);    // Create back button
     lv_obj_t *back_btn = lv_btn_create(brightness_screen);
+    lv_obj_set_size(back_btn, 120, 45);  // width: 120px, height: 45px
     lv_obj_align(back_btn, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_add_event_cb(back_btn, [](lv_event_t *e) {
         switchToScreen(STATE_MAIN);
@@ -373,10 +384,9 @@ void infoScreenGUI() {
     // Create date display
     date_label = lv_label_create(info_screen);
     lv_label_set_text(date_label, "Loading date...");
-    lv_obj_align(date_label, LV_ALIGN_TOP_LEFT, 20, 140);
-
-    // Create back button
+    lv_obj_align(date_label, LV_ALIGN_TOP_LEFT, 20, 140);    // Create back button
     lv_obj_t *back_btn = lv_btn_create(info_screen);
+    lv_obj_set_size(back_btn, 120, 45);  // width: 120px, height: 45px
     lv_obj_align(back_btn, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_add_event_cb(back_btn, [](lv_event_t *e) {
         switchToScreen(STATE_MAIN);
@@ -408,10 +418,9 @@ void settingsScreenGUI() {
     
     lv_obj_t *tz_label = lv_label_create(settings_screen);
     lv_label_set_text(tz_label, timezone.isEmpty() ? "Not set" : timezone.c_str());
-    lv_obj_align_to(tz_label, tz_title, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
-
-    // Create sleep button
+    lv_obj_align_to(tz_label, tz_title, LV_ALIGN_OUT_RIGHT_MID, 10, 0);    // Create sleep button
     lv_obj_t *sleep_btn = lv_btn_create(settings_screen);
+    lv_obj_set_size(sleep_btn, 140, 50);  // width: 140px, height: 50px
     lv_obj_align(sleep_btn, LV_ALIGN_CENTER, 0, 20);
     lv_obj_add_event_cb(sleep_btn, [](lv_event_t *e) {
         sleep_flag = true;
@@ -425,6 +434,7 @@ void settingsScreenGUI() {
 
     // Create back button
     lv_obj_t *back_btn = lv_btn_create(settings_screen);
+    lv_obj_set_size(back_btn, 120, 45);  // width: 120px, height: 45px
     lv_obj_align(back_btn, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_add_event_cb(back_btn, [](lv_event_t *e) {
         switchToScreen(STATE_MAIN);
